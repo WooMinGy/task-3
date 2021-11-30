@@ -2,16 +2,21 @@ import { createAction, handleActions } from "redux-actions";
 import { produce } from "immer";
 
 import { setCookie, getCookie, deleteCookie } from "../../shared/Cookie";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../shared/firebase";
+import firebase from "firebase/compat/app";
 
 // actions
 const LOG_IN = "LOG_IN";
 const LOG_OUT = "LOG_OUT";
 const GET_USER = "GET_USER";
+const SET_USER = "SET_USER"; //어짜피 로그인을 하던 회원가입을 하던 리덕스에 유저 정보가 들어가야 하니까 하나로 합쳐줬다.
 
 // action creators
-const logIn = createAction(LOG_IN, (user) => ({ user }));
+
 const logOut = createAction(LOG_OUT, (user) => ({ user }));
 const getUser = createAction(GET_USER, (user) => ({ user }));
+const setUser = createAction(SET_USER, (user) => ({ user }));
 
 // initialState
 const initialState = {
@@ -19,19 +24,110 @@ const initialState = {
   is_login: false,
 };
 
+const user_initial = {
+  user_name: "mings",
+};
+
 // middleware actions
-const loginAction = (user) => {
+const loginFB = (id, pwd) => {
   return function (dispatch, getState, { history }) {
-    console.log(history);
-    dispatch(logIn(user));
-    history.push("/");
+    auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).then((res) => {
+      auth
+        .signInWithEmailAndPassword(id, pwd)
+        .then((user) => {
+          console.log(user);
+          dispatch(
+            setUser({
+              user_name: user.user.displayName,
+              id: id,
+              user_profile: "",
+              uid: user.user.uid,
+            })
+          );
+
+          history.push("/");
+        })
+        .catch((error) => {
+          var errorCode = error.code;
+          var errorMessage = error.message;
+
+          console.log(errorCode, errorMessage);
+        });
+    });
+  };
+};
+
+const signupFB = (id, pwd, user_name) => {
+  // 비밀번호 기반 계정 만들기, Firebase 문서에도 있음
+  return function (dispatch, getState, { history }) {
+    auth
+      .createUserWithEmailAndPassword(id, pwd)
+      .then((user) => {
+        console.log(user);
+
+        auth.currentUser
+          .updateProfile({
+            displayName: user_name,
+          })
+          .then(() => {
+            dispatch(
+              setUser({
+                user_name: user_name,
+                id: id,
+                user_profile: "",
+                uid: user.user.uid,
+              })
+            );
+            history.push("/");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        // signed in
+        // ...
+      })
+      .catch((error) => {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+
+        console.log(errorCode, errorMessage); // 에러날때 메세지
+        //..
+      });
+  };
+};
+
+const loginCheckFB = () => {
+  return function (dispatch, getState, { history }) {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        dispatch(
+          setUser({
+            user_name: user.displayName, //문제있음 확인해보기 user.user.displayName,으로
+            user_profile: "",
+            id: user.email,
+            uid: user.uid,
+          })
+        );
+      } else {
+        dispatch(logOut());
+      }
+    });
+  };
+};
+
+const logoutFB = () => {
+  return function (dispatch, getState, { history }) {
+    auth.signOut().then(() => {
+      dispatch(logOut());
+      history.replace("/");
+    });
   };
 };
 
 // reducer
 export default handleActions(
   {
-    [LOG_IN]: (state, action) =>
+    [SET_USER]: (state, action) =>
       produce(state, (draft) => {
         setCookie("is_login", "success"); // 뒤에는 토큰이 들어갈 자리!
         draft.user = action.payload.user; // draft를 쓰면 알아서 불변성을 관리해 준다. 이때 createAction 패키지를 쓰면 중간에 payload(우리의 데이터가 담기는 곳)를 거쳐야 함
@@ -50,10 +146,12 @@ export default handleActions(
 
 // action creator export
 const actionCreators = {
-  logIn,
   logOut,
   getUser,
-  loginAction,
+  signupFB,
+  loginFB,
+  loginCheckFB,
+  logoutFB,
 };
 
 export { actionCreators };
