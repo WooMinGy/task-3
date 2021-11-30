@@ -1,10 +1,24 @@
 import React from "react";
-import Grid from "../elements/Grid";
+import { Grid, Image, Text } from "../elements"; // 한번에 여러개 import하는 방법 - ./elements/index.js 참고하기
 
 const Post = (props) => {
   return (
     <React.Fragment>
-      <Grid padding="16px">
+      <Grid>
+        <Grid is_flex>
+          <Image shape="circle" src={props.src} />
+          <Text bold>{props.user_info.user_name}</Text>
+          <Text>{props.user_info.insert_dt}</Text>
+        </Grid>
+        <Grid padding="16px">
+          <Text>{props.user_info.contents}</Text>
+        </Grid>
+        <Grid>
+          <Image shape="rectangle" src={props.src} />
+        </Grid>
+        <Grid padding="16px">
+          <Text bold>댓글 {props.user_info.comment_ctn}개</Text>
+        </Grid>
         <div>user profile / user name / insert_dt</div>
         <div>contents</div>
         <div>image</div>
@@ -18,10 +32,10 @@ Post.defaultProps = {
   user_info: {
     user_name: "mings",
     user_profile:
-      "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F8xO7v%2FbtrmnmIUwwu%2F8FkzhKZfe6YF1BMtLx1wyK%2Fimg.png",
+      "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F4I5WI%2FbtrmwRawr5e%2FupbtbZr3K2KRI00Wisxt11%2Fimg.png",
     image_url:
-      "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F8xO7v%2FbtrmnmIUwwu%2F8FkzhKZfe6YF1BMtLx1wyK%2Fimg.png",
-    contents: "티모네용",
+      "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F4I5WI%2FbtrmwRawr5e%2FupbtbZr3K2KRI00Wisxt11%2Fimg.png",
+    contents: "쿵이네용",
     comment_ctn: 10,
     insert_dt: "2021-02-27 10:00:00",
   },
