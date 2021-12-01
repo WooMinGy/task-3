@@ -1,8 +1,10 @@
 import { createAction, handleActions } from "redux-actions";
 import { produce } from "immer";
-import { firestore } from "../../shared/firebase";
+import { firestore, storage } from "../../shared/firebase";
 import "moment";
 import moment from "moment";
+
+import { actionCreators as imageActions } from "./image";
 
 const SET_POST = "SET_POST";
 const ADD_POST = "ADD_POST";
@@ -49,17 +51,48 @@ const addPostFB = (contents = "") => {
     };
     // console.log({ ...user_info, ..._post });
 
-    postDB
-      .add({ ...user_info, ..._post })
-      .then((doc) => {
-        let post = { user_info: user_info, ..._post, id: doc.id };
-        dispatch(addPost(post));
-        history.replace("/");
-      })
-      .catch((err) => {
-        console.log("post 작성에 실패했어요!", err);
-      });
-    // ~~~.add({추가할정보})
+    const _image = getState().image.preview;
+    // console.log(_image);
+    // console.log(typeof _image); 스트링
+    const _upload = storage
+      .ref(`images/${user_info.user_id}_${new Date().getTime()}`)
+      .putString(_image, "data_url");
+    // 파일명을 고유화 시키기 위해 uid와 업로드 시간을 가져와 엮어주었다.
+
+    _upload.then((snapshot) => {
+      snapshot.ref
+        .getDownloadURL()
+        .then((url) => {
+          console.log(url); // url 잘 들어오는지 확인
+
+          return url;
+        })
+        .then((url) => {
+          postDB
+            .add({ ...user_info, ..._post, image_url: url })
+            .then((doc) => {
+              let post = {
+                user_info: user_info,
+                ..._post,
+                id: doc.id,
+                image_url: url,
+              };
+              dispatch(addPost(post));
+              history.replace("/");
+
+              dispatch(imageActions.setPreview(null));
+            })
+            .catch((err) => {
+              window.alert("에고... 포스트 작성에 문제가 있어요!");
+              console.log("post 작성에 실패했어요!", err);
+            });
+          // ~~~.add({추가할정보})
+        })
+        .catch((err) => {
+          window.alert("에고... 이미지 업로드에 문제가 있어요!");
+          console.log("에고... 이미지 업로드에 문제가 있어요!", err);
+        });
+    });
   };
 };
 
