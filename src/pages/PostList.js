@@ -12,7 +12,10 @@ const PostList = (props) => {
   console.log(post_list);
 
   React.useEffect(() => {
-    dispatch(postActions.getPostFB());
+    if (post_list.length === 0) {
+      // 추가한 게시글이 맨 앞으로 오도록
+      dispatch(postActions.getPostFB());
+    }
   }, []);
   return (
     <React.Fragment>

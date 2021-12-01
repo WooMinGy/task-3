@@ -17,7 +17,7 @@ const Header = (props) => {
 
   const is_session = sessionStorage.getItem(_session_key) ? true : false;
 
-  console.log(is_session);
+  // console.log(is_session);
 
   if (is_login && is_session) {
     //두 조건이 true일 경우에만 실행

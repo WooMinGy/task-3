@@ -60,6 +60,7 @@ const FloatButton = styled.button`
   vertical-align: middle;
   border: none;
   border-radius: 50px;
+  cursor: pointer;
 `; // 버튼 이미지 참고.
 
 export default Button;
