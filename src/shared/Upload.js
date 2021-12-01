@@ -10,10 +10,22 @@ const Upload = () => {
   const fileInput = React.useRef();
 
   const selectFile = (e) => {
-    // console.log(e);
-    // console.log(e.target);
-    // console.log(e.target.files[0]); // 밑에 fileInput값과 같은지 확인하기
-    // console.log(fileInput.current.files[0]); // 인풋에 ref잡아서 했을때도 값이 잘 나오는지 확인
+    console.log(e);
+    console.log(e.target);
+    console.log(e.target.files[0]); // 밑에 fileInput값과 같은지 확인하기
+
+    console.log(fileInput.current.files[0]); // 인풋에 ref잡아서 했을때도 값이 잘 나오는지 확인
+
+    const reader = new FileReader(); //자바스크립트에 있는것
+    const file = fileInput.current.files[0];
+
+    reader.readAsDataURL(file);
+
+    reader.onloadend = () => {
+      // 읽기가 끝나면 발생하는 이벤트 핸들러
+      // console.log(reader.result); 파일리더로 읽어온 이미지의 내용물
+      dispatch(imageActions.setPreview(reader.result));
+    };
   };
 
   const uploadFB = () => {
