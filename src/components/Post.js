@@ -1,16 +1,30 @@
 import React from "react";
-import { Grid, Image, Text } from "../elements"; // 한번에 여러개 import하는 방법 - ./elements/index.js 참고하기
+import { Button, Grid, Image, Text } from "../elements"; // 한번에 여러개 import하는 방법 - ./elements/index.js 참고하기
+
+import { history } from "../redux/configureStore";
 
 const Post = (props) => {
   return (
     <React.Fragment>
       <Grid>
         <Grid is_flex>
-          <Grid is_flex width="65%">
+          <Grid is_flex width="62%">
             <Image shape="circle" src={props.src} />
             <Text bold>{props.user_info.user_name}</Text>
           </Grid>
-          <Text width="35%">{props.insert_dt}</Text>
+          <Text width="30%">{props.insert_dt}</Text>
+          {props.is_me && (
+            <Button
+              width="8%"
+              margin="4px"
+              padding="4px"
+              _onClick={() => {
+                history.push(`/write/${props.id}`);
+              }}
+            >
+              수정
+            </Button>
+          )}
         </Grid>
         <Grid padding="16px">
           <Text>{props.contents}</Text>
@@ -39,6 +53,7 @@ Post.defaultProps = {
   contents: "쿵이네용",
   comment_ctn: 10,
   insert_dt: "2021-02-27 10:00:00",
+  is_me: false,
 }; // 필요한 props들을 미리 넘겨놓는 방식 - props가 없어서 오류가 난다던가 화면이 깨지는것을 방지할 수 있음 하지만 props를 잘못 가져왔을때의 방어는 힘들다.
 
 export default Post;

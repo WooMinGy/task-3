@@ -18,7 +18,11 @@ const Image = (props) => {
       </AspectOutter>
     );
   }
-  return <React.Fragment></React.Fragment>;
+  return (
+    <React.Fragment>
+      <ImageDefault {...styles}></ImageDefault>
+    </React.Fragment>
+  );
 };
 
 Image.defaultProps = {
@@ -26,6 +30,14 @@ Image.defaultProps = {
   src: "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F4I5WI%2FbtrmwRawr5e%2FupbtbZr3K2KRI00Wisxt11%2Fimg.png",
   size: 36,
 };
+
+const ImageDefault = styled.div`
+  --size: ${(props) => props.size}px; //css에서도 변수를 만들 수 있다.
+  width: var(--size);
+  height: var(--size);
+  background-image: url("${(props) => props.src}");
+  background-size: cover;
+`;
 
 const AspectOutter = styled.div`
   width: 100%;
@@ -45,7 +57,6 @@ const ImageCircle = styled.div`
   width: var(--size);
   height: var(--size);
   border-radius: var(--size);
-
   background-image: url("${(props) => props.src}");
   background-size: cover;
   margin: 4px;
