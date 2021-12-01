@@ -41,7 +41,7 @@ const GridBox = styled.div`
 
   ${(props) =>
     props.is_flex
-      ? `display:flex; align-items: center; justify-content: center;`
+      ? `display:flex; align-items: center; justify-content: flex-start;`
       : ""}
 `;
 

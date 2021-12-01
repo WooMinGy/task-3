@@ -2,30 +2,41 @@ import React from "react";
 import styled from "styled-components";
 
 const Button = (props) => {
-  const { text, _onClick, is_float } = props;
+  const { text, _onClick, is_float, children, margin, width } = props;
   if (is_float) {
     return (
       <React.Fragment>
-        <FloatButton onClick={_onClick}>{text}</FloatButton>
+        <FloatButton onClick={_onClick}>{text ? text : children}</FloatButton>
       </React.Fragment>
     );
   } // 버튼이미지 참고. 로그인 했을때만 보이는 글쓰기 버튼
 
+  const styles = {
+    margin: margin,
+    width: width,
+  };
+
   return (
     <React.Fragment>
-      <ElButton onClick={_onClick}>{text}</ElButton>
+      <ElButton {...styles} onClick={_onClick}>
+        {text ? text : children}
+      </ElButton>
     </React.Fragment>
   );
 };
 
 Button.defaultProps = {
-  text: "텍스트",
+  text: false,
+  children: null,
   _onClick: () => {},
   is_float: false,
+  margin: false,
+  width: "100%",
 };
 
 const ElButton = styled.button`
-  width: 100%;
+  width: ${(props) => props.width};
+  ${(props) => (props.margin ? `margin: ${props.margin};` : "")}
   background-color: #212121;
   color: #ffffff;
   padding: 12px 0px;
