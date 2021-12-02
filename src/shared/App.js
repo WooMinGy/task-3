@@ -12,6 +12,7 @@ import PostWrite from "../pages/PostWrite";
 import PostDetail from "../pages/PostDetail";
 import Search from "./Search";
 import Notification from "../pages/Notification";
+import { Spinner } from "../elements";
 
 import Header from "../components/Header";
 import { Grid, Button } from "../elements";
