@@ -219,27 +219,6 @@ const getPostFB = (start = null, size = 3) => {
       });
   };
 };
-
-// postDB.get().then((docs) => {
-//   let post_list = [];
-//   docs.forEach((doc) => {
-//     let _post = doc.data();
-
-//     // ['comment_cnt', 'contents', ...] 이렇게 배열로 만들어준다.
-//     let post = Object.keys(_post).reduce(
-//       (acc, cur) => {
-//         if (cur.indexOf("user_") !== -1) {
-//           return {
-//             ...acc,
-//             user_info: { ...acc.user_info, [cur]: _post[cur] },
-//           };
-//         }
-//         return { ...acc, [cur]: _post[cur] };
-//       },
-//       { id: doc.id, user_info: {} }
-//     );
-//     post_list.push(post);
-
 //     // let _post = {         파이어배이스와 리덕스에서의 값들이 똑같이 묶여있지 않은경우 일치시켜주는 과정
 //     //   id: doc.id,         이렇게도 쓸 수 있다.
 //     //   ...doc.data(),
@@ -266,12 +245,55 @@ const getPostFB = (start = null, size = 3) => {
 //   dispatch(setPost(post_list));
 // });
 
+const getOnePostFB = (id) => {
+  // 댓글기능
+  return function (dispatch, getState, { history }) {
+    const postDB = firestore.collection("post");
+    postDB
+      .doc(id)
+      .get()
+      .then((doc) => {
+        console.log(doc);
+        console.log(doc.data());
+
+        let _post = doc.data();
+        let post = Object.keys(_post).reduce(
+          (acc, cur) => {
+            if (cur.indexOf("user_") !== -1) {
+              return {
+                ...acc,
+                user_info: { ...acc.user_info, [cur]: _post[cur] },
+              };
+            }
+            return { ...acc, [cur]: _post[cur] };
+          },
+          { id: doc.id, user_info: {} }
+        );
+        dispatch(setPost([post]));
+      });
+  };
+};
+
 export default handleActions(
   {
     [SET_POST]: (state, action) =>
       produce(state, (draft) => {
         draft.list.push(...action.payload.post_list);
-        draft.paging = action.payload.paging;
+
+        draft.list = draft.list.reduce((acc, cur) => {
+          if (acc.findIndex((a) => a.id === cur.id) === -1) {
+            // 댓글 -1이면 중복된 값이 없다는거임
+            return [...acc, cur];
+          } else {
+            acc[acc.findIndex((a) => a.id === cur.id)] = cur;
+            return acc;
+          }
+        }, []);
+
+        if (action.payload.paging) {
+          draft.paging = action.payload.paging; // 이렇게 하면 댓글 dispatch에서 기본값을 써줄 필요가 없음
+        }
+
         draft.is_loading = false;
       }),
 
@@ -300,6 +322,7 @@ const actionCreators = {
   getPostFB,
   addPostFB,
   editPostFB,
+  getOnePostFB,
 };
 
 export { actionCreators };

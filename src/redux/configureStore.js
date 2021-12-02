@@ -5,16 +5,18 @@ import { createBrowserHistory } from "history";
 import { connectRouter } from "connected-react-router";
 
 import User from "./modules/user";
-import post from "./modules/post";
-import image from "./modules/image";
+import Post from "./modules/post";
+import Image from "./modules/image";
+import Comment from "./modules/comment";
 
 export const history = createBrowserHistory(); // @히스토리 만들기@
 
 // 2. rootreducer 만들기
 const rootReducer = combineReducers({
   user: User,
-  post: post,
-  image: image,
+  post: Post,
+  image: Image,
+  comment: Comment,
   router: connectRouter(history), // @우리가 만든 히스토리와 라우터가 연결된다 - 브라우저 히스토리가 스토어에 다 저장됨!@
 });
 
@@ -42,7 +44,6 @@ const composeEnhancers = // JS는 브라우저가 아니어도 돌아가는데 �
 
 // 5. 미들웨어 묶기 - 지금까지의 미들웨어를 사용한다 하고 묶어준다.
 const enhancer = composeEnhancers(applyMiddleware(...middlewares));
-
 // 6. 스토어 만들기 - 미들웨어하고 루트 리듀서를 엮어준다.
 let store = (initialStore) => createStore(rootReducer, enhancer);
 
