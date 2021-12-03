@@ -10,6 +10,7 @@ const SET_POST = "SET_POST";
 const ADD_POST = "ADD_POST";
 const EDIT_POST = "EDIT_POST";
 const LOADING = "LOADING";
+const DELETE_POST = "DELETE_POST";
 
 const setPost = createAction(SET_POST, (post_list, paging) => ({
   post_list,
@@ -21,6 +22,7 @@ const editPost = createAction(EDIT_POST, (post_id, post) => ({
   post,
 }));
 const loading = createAction(LOADING, (is_loading) => ({ is_loading }));
+const deletePost = createAction(DELETE_POST, (post_id) => ({ post_id }));
 
 const initialState = {
   list: [],
@@ -46,7 +48,7 @@ const initialPost = {
 const editPostFB = (post_id = null, post = {}) => {
   return function (dispatch, getState, { history }) {
     if (!post_id) {
-      console.log("게시물 정보가 없어요!");
+      window.alert("게시물 정보가 없어요!");
       return;
     }
     const _image = getState().image.preview;
@@ -274,6 +276,28 @@ const getOnePostFB = (id) => {
   };
 };
 
+const deletePostFB = (post_id = null) => {
+  return function (dispatch, getState, { history }) {
+    if (!post_id) {
+      window.alert("삭제할 수 없어요!");
+      return;
+    }
+
+    const postDB = firestore.collection("post");
+
+    postDB
+      .doc(post_id)
+      .delete()
+      .then((del) => {
+        dispatch(deletePost(post_id));
+        history.replace("/");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+};
+
 export default handleActions(
   {
     [SET_POST]: (state, action) =>
@@ -311,6 +335,12 @@ export default handleActions(
       produce(state, (draft) => {
         draft.is_loading = action.payload.is_loading;
       }),
+    [DELETE_POST]: (state, action) =>
+      produce(state, (draft) => {
+        let idx = draft.list.findIndex((p) => p.id === action.payload.post_id);
+
+        draft.list.splice(idx, 1); //지워준다.
+      }),
   },
   initialState
 );
@@ -323,6 +353,7 @@ const actionCreators = {
   addPostFB,
   editPostFB,
   getOnePostFB,
+  deletePostFB,
 };
 
 export { actionCreators };

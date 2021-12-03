@@ -2,27 +2,43 @@ import React from "react";
 import { Button, Grid, Image, Text } from "../elements"; // 한번에 여러개 import하는 방법 - ./elements/index.js 참고하기
 
 import { history } from "../redux/configureStore";
+import { useDispatch } from "react-redux";
+import { actionCreators as postActions } from "../redux/modules/post";
 
 const Post = (props) => {
+  const dispatch = useDispatch();
+
   return (
     <React.Fragment>
       <Grid>
         <Grid is_flex>
-          <Grid is_flex width="62%">
+          <Grid is_flex width="52%">
             <Image shape="circle" src={props.src} />
             <Text bold>{props.user_info.user_name}</Text>
           </Grid>
           <Text width="30%">{props.insert_dt}</Text>
           {props.is_me && (
             <Button
-              width="8%"
-              margin="4px"
+              width="9%"
+              margin="4px 2px"
               padding="4px"
               _onClick={() => {
                 history.push(`/write/${props.id}`);
               }}
             >
               수정
+            </Button>
+          )}
+          {props.is_me && (
+            <Button
+              width="9%"
+              margin="4px 2px"
+              padding="4px"
+              _onClick={() => {
+                dispatch(postActions.deletePostFB(props.id));
+              }}
+            >
+              삭제
             </Button>
           )}
         </Grid>
