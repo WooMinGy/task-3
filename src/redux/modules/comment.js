@@ -1,6 +1,6 @@
 import { createAction, handleActions } from "redux-actions";
 import { produce } from "immer";
-import { firestore } from "../../shared/firebase";
+import { firestore, realtime } from "../../shared/firebase";
 import "moment";
 import moment from "moment";
 
@@ -66,6 +66,30 @@ const addCommentFB = (post_id, contents) => {
                 comment_cnt: parseInt(post.comment_cnt) + 1, // 묵시적 형변환(string + number = string형태로 나오는것) 때문에 parseInt 사용
               })
             );
+
+            const _noti_item = realtime
+              .ref(`noti/${post.user_info.user_id}/list`)
+              .push(); //참조 가져오기
+
+            _noti_item.set(
+              {
+                post_id: post.id,
+                user_name: comment.user_name,
+                image_url: post.image_url,
+                insert_dt: comment.insert_dt,
+              },
+              (err) => {
+                if (err) {
+                  console.log("알림 저장에 실패했어요!");
+                } else {
+                  const notiDB = realtime.ref(`noti/${post.user_info.user_id}`);
+
+                  notiDB.update({ read: false });
+                }
+              }
+            ); //set을 하면 이 공간에 데이터를 넣어준다는 것이다.
+
+            // notiDB.update({ read: false });
           }
         });
     });
