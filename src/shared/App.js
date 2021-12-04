@@ -1,5 +1,6 @@
 import "./App.css";
 import React from "react";
+import styled from "styled-components";
 
 import { BrowserRouter, Route } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
@@ -37,30 +38,42 @@ function App() {
 
   return (
     <React.Fragment>
-      <Grid>
-        <Header></Header>
-        <ConnectedRouter history={history}>
-          <Route path="/" exact component={PostList} />
-          <Route path="/login" exact component={Login} />
-          <Route path="/signup" exact component={Signup} />
-          <Route path="/write" exact component={PostWrite} />
-          <Route path="/write/:id" exact component={PostWrite} />
-          <Route path="/post/:id" exact component={PostDetail} />
-          <Route path="/search" exact component={Search} />
-          <Route path="/noti" exact component={Notification} />
-        </ConnectedRouter>
-      </Grid>
-      <Permit>
-        <Button
-          is_float
-          text="+"
-          _onClick={() => {
-            history.push("/write");
-          }}
-        ></Button>
-      </Permit>
+      <Container>
+        <Grid>
+          <Header></Header>
+          <ConnectedRouter history={history}>
+            <Route path="/" exact component={PostList} />
+            <Route path="/login" exact component={Login} />
+            <Route path="/signup" exact component={Signup} />
+            <Route path="/write" exact component={PostWrite} />
+            <Route path="/write/:id" exact component={PostWrite} />
+            <Route path="/post/:id" exact component={PostDetail} />
+            <Route path="/search" exact component={Search} />
+            <Route path="/noti" exact component={Notification} />
+          </ConnectedRouter>
+        </Grid>
+        <Permit>
+          <Button
+            is_float
+            text="+"
+            _onClick={() => {
+              history.push("/write");
+            }}
+          ></Button>
+        </Permit>
+      </Container>
     </React.Fragment>
   );
 }
+
+const Container = styled.div`
+  max-width: 450px;
+  min-height: 70vh;
+  background-color: #fff;
+  padding: 16px;
+  margin: 20px auto;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+`;
 
 export default App;

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Grid, Image, Text } from "../elements"; // 한번에 여러개 import하는 방법 - ./elements/index.js 참고하기
+import { Button, Grid, Image, Text, HeartButton } from "../elements"; // 한번에 여러개 import하는 방법 - ./elements/index.js 참고하기
 
 import { history } from "../redux/configureStore";
 import { useDispatch } from "react-redux";
@@ -52,6 +52,11 @@ const Post = (props) => {
           <Text margin="0px" bold>
             댓글 {props.comment_ctn}개
           </Text>
+          <Text margin="0px" bold>
+            좋아요 {}개
+          </Text>
+
+          <HeartButton></HeartButton>
         </Grid>
       </Grid>
     </React.Fragment>
